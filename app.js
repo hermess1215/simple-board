@@ -1,9 +1,7 @@
 const express = require('express');
 const path = require('path');
+const db = require('./db'); // DB 연결 파일 불러오기
 const app = express();
-
-let posts = []; // 게시글 저장소
-let nextId = 1;
 
 app.use(express.json());
 app.use(express.static(path.join(__dirname, 'public')));
@@ -14,26 +12,22 @@ app.get('/', (req, res) => {
 });
 
 // 게시글 목록 가져오기
-app.get('/posts', (req, res) => {
-  res.json(posts);
+app.get('/posts', async (req, res) => {
+  const [rows] = await db.query('SELECT * FROM posts ORDER BY created_at DESC');
+  res.json(rows);
 });
 
 // 게시글 추가
-app.post('/posts', (req, res) => {
+app.post('/posts', async (req, res) => {
   const { title, content } = req.body;
-  const newPost = {
-    id: nextId++,
-    title,
-    content
-  };
-  posts.unshift(newPost);
-  res.status(201).json(newPost);
+  await db.query('INSERT INTO posts (title, content) VALUES (?, ?)', [title, content]);
+  res.status(201).json({ message: '게시글 등록 완료' });
 });
 
 // 게시글 삭제
-app.delete('/posts/:id', (req, res) => {
-  const id = parseInt(req.params.id);
-  posts = posts.filter(p => p.id !== id);
+app.delete('/posts/:id', async (req, res) => {
+  const id = req.params.id;
+  await db.query('DELETE FROM posts WHERE id = ?', [id]);
   res.sendStatus(204);
 });
 
