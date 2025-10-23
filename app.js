@@ -31,6 +31,7 @@ app.delete('/posts/:id', async (req, res) => {
   res.sendStatus(204);
 });
 
-app.listen(3000, () => {
-  console.log('서버 실행 중: http://localhost:3000');
+const PORT = process.env.PORT || 3000; // 배포 시에는 Render에서 할당한 PORT 사용
+app.listen(PORT, () => {
+  console.log(`서버 실행 중: http://localhost:${PORT}`);
 });
