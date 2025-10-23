@@ -13,25 +13,40 @@ app.get('/', (req, res) => {
 
 // 게시글 목록 가져오기
 app.get('/posts', async (req, res) => {
-  const [rows] = await db.query('SELECT * FROM posts ORDER BY created_at DESC');
-  res.json(rows);
+  try {
+    const [rows] = await db.query('SELECT * FROM posts ORDER BY created_at DESC');
+    res.json(rows);
+  } catch (err) {
+    console.error(err); // 서버 콘솔에 에러 출력
+    res.status(500).json({ error: '서버 내부 오류 발생' });
+  }
 });
 
 // 게시글 추가
 app.post('/posts', async (req, res) => {
-  const { title, content } = req.body;
-  await db.query('INSERT INTO posts (title, content) VALUES (?, ?)', [title, content]);
-  res.status(201).json({ message: '게시글 등록 완료' });
+  try {
+    const { title, content } = req.body;
+    await db.query('INSERT INTO posts (title, content) VALUES (?, ?)', [title, content]);
+    res.status(201).json({ message: '게시글 등록 완료' });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: '서버 내부 오류 발생' });
+  }
 });
 
 // 게시글 삭제
 app.delete('/posts/:id', async (req, res) => {
-  const id = req.params.id;
-  await db.query('DELETE FROM posts WHERE id = ?', [id]);
-  res.sendStatus(204);
+  try {
+    const id = req.params.id;
+    await db.query('DELETE FROM posts WHERE id = ?', [id]);
+    res.sendStatus(204);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: '서버 내부 오류 발생' });
+  }
 });
 
-const PORT = process.env.PORT || 3000; // 배포 시에는 Render에서 할당한 PORT 사용
+const PORT = process.env.PORT || 3000; // 배포 시 Render에서 할당한 PORT 사용
 app.listen(PORT, () => {
   console.log(`서버 실행 중: http://localhost:${PORT}`);
 });
