@@ -4,7 +4,9 @@ async function fetchPosts() {
   const container = document.getElementById('posts');
   container.innerHTML = '';
 
-  posts.forEach(post => {
+  console.log(posts)
+
+  posts.rows.forEach(post => {
     const div = document.createElement('div');
     div.className = 'post';
     div.innerHTML = `

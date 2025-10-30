@@ -1,13 +1,12 @@
 // db.js
-const mysql = require('mysql2/promise');
+const pg = require('pg');
 require('dotenv').config(); // .env 파일 불러오기
 
-const db = mysql.createPool({
-  host: process.env.DB_HOST || 'localhost',
-  user: process.env.DB_USER || 'root',
-  password: process.env.DB_PASSWORD || '',
-  database: process.env.DB_NAME || 'simple_board',
-  connectionLimit: 10
-});
+const { Pool } = pg
+
+const db = new Pool ({
+  connectionString: process.env.DATABASEURL,
+  ssl: { rejectUnauthorized: false }
+})
 
 module.exports = db;

@@ -14,7 +14,7 @@ app.get('/', (req, res) => {
 // 게시글 목록 가져오기
 app.get('/posts', async (req, res) => {
   try {
-    const [rows] = await db.query('SELECT * FROM posts ORDER BY created_at DESC');
+    const rows = await db.query('SELECT * FROM posts ORDER BY created_at DESC');
     res.json(rows);
   } catch (err) {
     console.error(err); // 서버 콘솔에 에러 출력
@@ -26,7 +26,7 @@ app.get('/posts', async (req, res) => {
 app.post('/posts', async (req, res) => {
   try {
     const { title, content } = req.body;
-    await db.query('INSERT INTO posts (title, content) VALUES (?, ?)', [title, content]);
+    await db.query('INSERT INTO posts (title, content) VALUES ($1, $2)', [title, content]);
     res.status(201).json({ message: '게시글 등록 완료' });
   } catch (err) {
     console.error(err);
@@ -38,7 +38,7 @@ app.post('/posts', async (req, res) => {
 app.delete('/posts/:id', async (req, res) => {
   try {
     const id = req.params.id;
-    await db.query('DELETE FROM posts WHERE id = ?', [id]);
+    await db.query('DELETE FROM posts WHERE id = $1', [id]);
     res.sendStatus(204);
   } catch (err) {
     console.error(err);
